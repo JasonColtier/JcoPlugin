@@ -18,6 +18,6 @@ class JCO_UE5_PLUGIN_API UJcoGameInstanceSubsystem : public UGameInstanceSubsyst
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Category = "JCO Debug")
 	UJCOCheatManager* CheatManager;
 };

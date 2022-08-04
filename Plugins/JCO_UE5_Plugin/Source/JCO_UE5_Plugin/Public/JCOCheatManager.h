@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "Engine/World.h"
 #include "CoreMinimal.h"
 #include "GameFramework/CheatManager.h"
 #include "JCOCheatManager.generated.h"
@@ -18,13 +18,13 @@ public:
 	/**
 	 * @brief Active ou pas le débug, accessible depuis la console commande
 	 */
-	UFUNCTION(Exec, CallInEditor)
+	UFUNCTION(Exec, CallInEditor,Category = "JCO Debug")
 	void ToggleDebug();
 	
 	/**
 	 * @brief Est ce que le debug est activé?
 	 */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = "JCO Debug")
 	bool DebugActivated;
 
 	/**
