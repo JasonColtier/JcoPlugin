@@ -18,13 +18,13 @@ public:
 	/**
 	 * @brief Active ou pas le débug, accessible depuis la console commande
 	 */
-	UFUNCTION(Exec, CallInEditor,Category = "JCO Debug")
+	UFUNCTION(Exec, CallInEditor, Category = "JCO Debug")
 	void ToggleDebug();
-	
+
 	/**
 	 * @brief Est ce que le debug est activé?
 	 */
-	UPROPERTY(EditAnywhere,Category = "JCO Debug")
+	UPROPERTY(EditAnywhere, Category = "JCO Debug")
 	bool DebugActivated;
 
 	/**

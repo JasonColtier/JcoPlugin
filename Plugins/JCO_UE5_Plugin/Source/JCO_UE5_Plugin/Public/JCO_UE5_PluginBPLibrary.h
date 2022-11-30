@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "Components/PanelWidget.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "JCO_UE5_PluginBPLibrary.generated.h"
+
+class UWidget;
 
 UENUM()
 enum ELogEnum
@@ -39,7 +42,9 @@ class UJCO_UE5_PluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, meta=(WorldContext="WorldContextObject", CallableWithoutWorldContext, Keywords = "log print", AdvancedDisplay = "2", DevelopmentOnly), Category="Utilities|String")
 	static void JCO_Print(const UObject* WorldContextObject, FString String1, FString String2, ELogEnum LogCategory, bool bPrintToScreen = true, bool bPrintToLog = true, FLinearColor TextColor = FLinearColor(0.0, 0.66, 1.0), float Duration = 2.f);
 
-	UFUNCTION(BlueprintPure, Category = "Low Entry|Extended Standard Library|Utilities|Build", Meta = (DisplayName = "With Editor", Keywords = "compile export mode version type build platform in inside using"))
+	UFUNCTION(BlueprintPure, Category = "Debug", Meta = (DisplayName = "With Editor", Keywords = "compile export mode version type build platform in inside using"))
 	static bool WithEditor();
 
+	UFUNCTION(BlueprintCallable, Category="Widget")
+	static void ReplaceWidget(UPanelWidget* PanelWidget,UWidget* currentChild, UWidget* widget);
 };

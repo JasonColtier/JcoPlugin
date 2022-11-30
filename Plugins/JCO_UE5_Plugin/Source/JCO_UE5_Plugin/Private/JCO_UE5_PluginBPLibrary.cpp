@@ -2,6 +2,7 @@
 
 #include "JCO_UE5_PluginBPLibrary.h"
 #include "JCO_UE5_Plugin.h"
+#include "Components/PanelWidget.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 UJCO_UE5_PluginBPLibrary::UJCO_UE5_PluginBPLibrary(const FObjectInitializer& ObjectInitializer)
@@ -17,6 +18,11 @@ bool UJCO_UE5_PluginBPLibrary::WithEditor()
 #else
 	return false;
 #endif
+}
+
+void UJCO_UE5_PluginBPLibrary::ReplaceWidget(UPanelWidget* PanelWidget, UWidget* currentChild, UWidget* widget)
+{
+	PanelWidget->ReplaceChild(currentChild,widget);
 }
 
 void UJCO_UE5_PluginBPLibrary::JCO_Print(const UObject* WorldContextObject, FString String1, FString String2, ELogEnum LogCategory, bool bPrintToScreen, bool bPrintToLog, FLinearColor TextColor, float Duration)
