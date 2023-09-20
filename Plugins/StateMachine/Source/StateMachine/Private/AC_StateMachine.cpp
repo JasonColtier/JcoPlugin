@@ -12,6 +12,7 @@ UAC_StateMachine::UAC_StateMachine()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	SetComponentTickInterval(0.5);
 	// ...
 }
 
@@ -21,12 +22,13 @@ void UAC_StateMachine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(initialState != nullptr)
+	if (initialState != nullptr)
 	{
-		currentState = NewObject<UState>(this,initialState);
-	}else
+		ChangeState(initialState);
+	}
+	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("no initial state") );
+		UE_LOG(LogTemp, Error, TEXT("no initial state"));
 	}
 }
 
@@ -36,6 +38,44 @@ void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// currentState->
+	CheckTransitions();
+	currentState->Tick();
 }
 
+void UAC_StateMachine::ChangeState(TSubclassOf<UState> newState)
+{
+	if (newState == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("invalid state passed as parameter"));
+		return;
+	}
+	
+	if (currentState != nullptr)
+	{
+		currentState->OnExitState();
+		currentState->MarkAsGarbage();
+
+	}
+
+	currentState = NewObject<UState>(this, newState);
+	currentState->StateMachineRef = this;
+	currentState->OnEnterState();
+}
+
+void UAC_StateMachine::CheckTransitions()
+{
+	for (const auto& transition : currentState->transitionsArray)
+	{
+		bool canTransition;
+		TSubclassOf<UState> nextState;
+		transition->Execute(nextState, canTransition);
+		if (canTransition)
+		{
+			UE_LOG(LogTemp, Log, TEXT("transition found !"));
+			ChangeState(nextState);
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("no transition found "));
+}

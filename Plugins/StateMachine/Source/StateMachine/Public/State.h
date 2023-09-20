@@ -6,20 +6,9 @@
 #include "UObject/NoExportTypes.h"
 #include "State.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FTransitionDelegate,bool&,canTransition);
+class UAC_StateMachine;
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FTransitionDelegate, TSubclassOf<UState>&, nextState, bool&, canTransition);
 
-
-USTRUCT(BlueprintType)
-struct FTransition
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FTransitionDelegate transitionFunction;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TSubclassOf<UState> nextState;
-};
 
 /**
  * 
@@ -31,22 +20,23 @@ class STATEMACHINE_API UState : public UObject
 
 public:
 
+	UPROPERTY(BlueprintReadOnly)
+	UAC_StateMachine* StateMachineRef;
+
+	UPROPERTY()
+	FTransitionDelegate defaultTransitionDelegate;
+
+	TArray<FTransitionDelegate*> transitionsArray;
+
+	
+	UState();
+
+
+	~UState();
+	
 	UFUNCTION(BlueprintCallable,meta = (AutoCreateRefTerm = "function"))
-	void AddTransition(FTransitionDelegate function,TSubclassOf<UState> nextState)
-	{
-		
-	}
-
-	UState()
-	{
-		UE_LOG(LogTemp, Log, TEXT("new state") );
-	}
-
-	~UState()
-	{
-		UE_LOG(LogTemp, Log, TEXT("delete state") );
-	}
-
+	void AddTransition(FTransitionDelegate function);
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void Tick();
 
@@ -58,8 +48,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void InitializeTransitions();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DefaultTransition(TSubclassOf<UState>& nextState,bool& canTransition);
 	
-private:
-	UPROPERTY()
-	TArray<FTransition> transitionsArray;
+
 };

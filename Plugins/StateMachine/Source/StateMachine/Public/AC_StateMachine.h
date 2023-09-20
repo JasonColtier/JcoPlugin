@@ -23,6 +23,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UState* currentState;
+
+	
 	
 protected:
 	// Called when the game starts
@@ -32,5 +34,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	UFUNCTION()
+	void ChangeState(TSubclassOf<UState> newState);
+
+private:
+	UFUNCTION()
+	void CheckTransitions();
 };
