@@ -5,6 +5,8 @@
 
 #include "State.h"
 
+DEFINE_LOG_CATEGORY(StateMachine);
+
 // Sets default values for this component's properties
 UAC_StateMachine::UAC_StateMachine()
 {
@@ -12,8 +14,6 @@ UAC_StateMachine::UAC_StateMachine()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SetComponentTickInterval(0.5);
-	// ...
 }
 
 
@@ -28,7 +28,7 @@ void UAC_StateMachine::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("no initial state"));
+		UE_LOG(StateMachine, Error, TEXT("no initial state"));
 	}
 }
 
@@ -38,6 +38,10 @@ void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!currentState)
+		return;
+
+
 	CheckTransitions();
 	currentState->Tick();
 }
@@ -46,20 +50,32 @@ void UAC_StateMachine::ChangeState(TSubclassOf<UState> newState)
 {
 	if (newState == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("invalid state passed as parameter"));
+		UE_LOG(StateMachine, Error, TEXT("invalid state passed as parameter"));
 		return;
 	}
-	
+
 	if (currentState != nullptr)
 	{
 		currentState->OnExitState();
 		currentState->MarkAsGarbage();
-
 	}
 
 	currentState = NewObject<UState>(this, newState);
 	currentState->StateMachineRef = this;
 	currentState->OnEnterState();
+	OnChangeStateDelegate.Broadcast(currentState);
+}
+
+void UAC_StateMachine::ForceChangeState(TSubclassOf<UState> newState)
+{
+	if (newState)
+	{
+		UE_LOG(StateMachine, Log, TEXT("forcing state change to %s"), *newState->GetClass()->GetName());
+		ChangeState(newState);
+	}else
+	{
+		UE_LOG(StateMachine, Log, TEXT("bad state provided"));
+	}
 }
 
 void UAC_StateMachine::CheckTransitions()
@@ -68,14 +84,13 @@ void UAC_StateMachine::CheckTransitions()
 	{
 		bool canTransition;
 		TSubclassOf<UState> nextState;
-		transition->Execute(nextState, canTransition);
+		transition.Execute(nextState, canTransition);
 		if (canTransition)
 		{
-			UE_LOG(LogTemp, Log, TEXT("transition found !"));
 			ChangeState(nextState);
 			return;
 		}
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("no transition found "));
+	UE_LOG(StateMachine, Log, TEXT("no transition found "));
 }
