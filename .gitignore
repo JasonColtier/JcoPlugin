@@ -14,3 +14,6 @@ Saved
 *.xcworkspace
 .idea/
 Plugins/Developer/RiderLink/*
+/_BUILD/*
+/JcoPlugin.sln.DotSettings.user
+/.vsconfig
