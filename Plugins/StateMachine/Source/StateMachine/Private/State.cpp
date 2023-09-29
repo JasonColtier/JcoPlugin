@@ -18,13 +18,13 @@ void UState::AddTransition(const FTransitionDelegate& function)
 	UE_LOG(StateMachine, Log, TEXT("added transition %s"), *function.GetFunctionName().ToString());
 }
 
-void UState::GetTransitions(TArray<TSubclassOf<UState>>& transitions)
+void UState::GetTransitions(TArray<TSoftClassPtr<UState>>& transitions)
 {
 	for (const auto& transition : transitionsArray)
 	{
 		if (transition.IsBound())
 		{
-			TSubclassOf<UState> nextState;
+			TSoftClassPtr<UState> nextState;
 			bool tmp;
 			transition.Execute(nextState, tmp);
 			transitions.Add(nextState);

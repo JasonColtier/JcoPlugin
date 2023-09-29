@@ -7,7 +7,7 @@
 #include "State.generated.h"
 
 class UAC_StateMachine;
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FTransitionDelegate, TSubclassOf<UState>&, nextState, bool&, canTransition);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FTransitionDelegate, TSoftClassPtr<UState>&, nextState, bool&, canTransition);
 
 
 /**
@@ -73,12 +73,12 @@ public:
 	 * @param canTransition 
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
-	void DefaultTransition(TSubclassOf<UState>& nextState,bool& canTransition);
+	void DefaultTransition(TSoftClassPtr<UState>& nextState,bool& canTransition);
 	
 	/**
 	 * @brief 
 	 * @param transitions Gets the next states from the current state
 	 */
 	UFUNCTION(BlueprintCallable)
-	void GetTransitions(TArray<TSubclassOf<UState>>& transitions);
+	void GetTransitions(TArray<TSoftClassPtr<UState>>& transitions);
 };

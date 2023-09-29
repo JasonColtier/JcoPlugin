@@ -26,13 +26,13 @@ public:
 	 * @brief the initial state of the state machine
 	 */
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UState> initialState;
+	TSoftClassPtr<UState> initialState;
 
 	/**
 	 * @brief the current state of the state machine
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	UState* currentState;
+	TObjectPtr<UState> currentState;
 
 	/**
 	 * @brief draws debug states and transition on screen
@@ -58,14 +58,14 @@ public:
 	 * @brief 
 	 * @param newState Changes the current state of the state machine to the new state. The new state is instantiated
 	 */
-	void ChangeState(TSubclassOf<UState> newState);
+	void ChangeState(TSoftClassPtr<UState> newState);
 
 	/**
 	 * @brief Force the state machine to switch to the desired state, no transition check is done
 	 * @param newState 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void ForceChangeState(TSubclassOf<UState> newState);
+	void ForceChangeState(TSoftClassPtr<UState> newState);
 
 private:
 	/**

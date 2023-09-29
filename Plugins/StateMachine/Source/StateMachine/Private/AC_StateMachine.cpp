@@ -46,7 +46,7 @@ void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	currentState->Tick();
 }
 
-void UAC_StateMachine::ChangeState(TSubclassOf<UState> newState)
+void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 {
 	if (newState == nullptr)
 	{
@@ -60,13 +60,13 @@ void UAC_StateMachine::ChangeState(TSubclassOf<UState> newState)
 		currentState->MarkAsGarbage();
 	}
 
-	currentState = NewObject<UState>(this, newState);
+	currentState = NewObject<UState>(this, newState.Get());
 	currentState->StateMachineRef = this;
 	currentState->OnEnterState();
 	OnChangeStateDelegate.Broadcast(currentState);
 }
 
-void UAC_StateMachine::ForceChangeState(TSubclassOf<UState> newState)
+void UAC_StateMachine::ForceChangeState(TSoftClassPtr<UState> newState)
 {
 	if (newState)
 	{
@@ -83,11 +83,11 @@ void UAC_StateMachine::CheckTransitions()
 	for (const auto& transition : currentState->transitionsArray)
 	{
 		bool canTransition;
-		TSubclassOf<UState> nextState;
+		TSoftClassPtr<UState> nextState;
 		transition.Execute(nextState, canTransition);
 		if (canTransition)
 		{
-			ChangeState(nextState);
+			ChangeState(nextState.Get());
 			return;
 		}
 	}
