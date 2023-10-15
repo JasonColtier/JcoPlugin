@@ -48,7 +48,7 @@ void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 {
-	if (newState == nullptr)
+	if (newState.IsNull())
 	{
 		UE_LOG(StateMachine, Error, TEXT("invalid state passed as parameter"));
 		return;
@@ -59,8 +59,8 @@ void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 		currentState->OnExitState();
 		currentState->MarkAsGarbage();
 	}
-
-	currentState = NewObject<UState>(this, newState.Get());
+	
+	currentState = NewObject<UState>(this, newState.LoadSynchronous());
 	currentState->StateMachineRef = this;
 	currentState->OnEnterState();
 	OnChangeStateDelegate.Broadcast(currentState);
