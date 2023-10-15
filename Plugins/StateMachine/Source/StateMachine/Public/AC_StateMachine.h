@@ -41,7 +41,7 @@ public:
 	bool showDebug;
 
 	/**
-	 * @brief called when a state is changed
+	 * @brief called when a state is changed, idealy this sould be used sparingly to keep the states autonomous
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FOnChangeState OnChangeStateDelegate;
@@ -69,7 +69,7 @@ public:
 
 private:
 	/**
-	 * @brief Cecks the transition of the current state to see if it can transition to another state
+	 * @brief Checks the transition of the current state to see if it can transition to another state
 	 */
 	UFUNCTION()
 	void CheckTransitions();

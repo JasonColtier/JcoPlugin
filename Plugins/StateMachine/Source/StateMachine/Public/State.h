@@ -38,8 +38,14 @@ public:
 	TArray<FTransitionDelegate> transitionsArray;
 
 	
+	/**
+	 * @brief Constructor of the state
+	 */
 	UState();
 	
+	/**
+	 * @brief Destructor of the state
+	 */
 	~UState();
 	
 	/**
