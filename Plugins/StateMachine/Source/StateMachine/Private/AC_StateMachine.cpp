@@ -13,7 +13,6 @@ UAC_StateMachine::UAC_StateMachine()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
@@ -34,7 +33,8 @@ void UAC_StateMachine::BeginPlay()
 
 
 // Called every frame
-void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType,
+                                     FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -59,7 +59,7 @@ void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 		currentState->OnExitState();
 		currentState->MarkAsGarbage();
 	}
-	
+
 	currentState = NewObject<UState>(this, newState.LoadSynchronous());
 	currentState->StateMachineRef = this;
 	currentState->OnEnterState();
@@ -68,14 +68,14 @@ void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 
 void UAC_StateMachine::ForceChangeState(TSoftClassPtr<UState> newState)
 {
-	if (newState)
+	if (newState.IsNull())
 	{
-		UE_LOG(StateMachine, Log, TEXT("forcing state change to %s"), *newState->GetClass()->GetName());
-		ChangeState(newState);
-	}else
-	{
-		UE_LOG(StateMachine, Log, TEXT("bad state provided"));
+		UE_LOG(StateMachine, Error, TEXT("invalid state passed as parameter when force loading"));
+		return;
 	}
+	
+	UE_LOG(StateMachine, Log, TEXT("forcing state change to %s"), *newState->GetClass()->GetName());
+	ChangeState(newState);
 }
 
 void UAC_StateMachine::CheckTransitions()
