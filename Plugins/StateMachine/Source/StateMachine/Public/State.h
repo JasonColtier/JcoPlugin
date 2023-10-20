@@ -7,19 +7,24 @@
 #include "State.generated.h"
 
 class UAC_StateMachine;
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FTransitionDelegate, TSoftClassPtr<UState>&, nextState, bool&, canTransition);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FTransitionDelegate, TSoftClassPtr<AState>&, nextState, bool&, canTransition);
 
 
 /**
  * 
  */
-UCLASS(Blueprintable)
-class STATEMACHINE_API UState : public UObject
+UCLASS()
+class STATEMACHINE_API AState : public AActor
 {
 	GENERATED_BODY()
 
 public:
+	virtual void BeginDestroy() override;
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	/**
 	 * @brief La référence à la state machine
 	 */
@@ -37,33 +42,16 @@ public:
 	 */
 	TArray<FTransitionDelegate> transitionsArray;
 
-	
-	/**
-	 * @brief Constructor of the state
-	 */
-	UState();
-	
-	/**
-	 * @brief Destructor of the state
-	 */
-	~UState();
-	
 	/**
 	 * @brief Adds a transition to the transition array
 	 * @param function 
 	 */
-	UFUNCTION(BlueprintCallable,meta = (AutoCreateRefTerm = "function"))
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "function"))
 	void AddTransition(const FTransitionDelegate& function);
-	
-	/**
-	 * @brief tick recieved from the state machine
-	 */
-	UFUNCTION(BlueprintImplementableEvent)
-	void Tick();
 
 	/**
-	 * @brief When this state is initialised
-	 */
+	* @brief When this state is initialised
+	*/
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnEnterState();
 
@@ -79,12 +67,12 @@ public:
 	 * @param canTransition 
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
-	void DefaultTransition(TSoftClassPtr<UState>& nextState,bool& canTransition);
-	
+	void DefaultTransition(TSoftClassPtr<AState>& nextState, bool& canTransition);
+
 	/**
 	 * @brief 
 	 * @param transitions Gets the next states from the current state
 	 */
 	UFUNCTION(BlueprintCallable)
-	void GetTransitions(TArray<TSoftClassPtr<UState>>& transitions);
+	void GetTransitions(TArray<TSoftClassPtr<AState>>& transitions);
 };

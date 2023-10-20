@@ -43,10 +43,9 @@ void UAC_StateMachine::TickComponent(float DeltaTime, ELevelTick TickType,
 
 
 	CheckTransitions();
-	currentState->Tick();
 }
 
-void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
+void UAC_StateMachine::ChangeState(TSoftClassPtr<AState> newState)
 {
 	if (newState.IsNull())
 	{
@@ -60,13 +59,13 @@ void UAC_StateMachine::ChangeState(TSoftClassPtr<UState> newState)
 		currentState->MarkAsGarbage();
 	}
 
-	currentState = NewObject<UState>(this, newState.LoadSynchronous());
+	currentState = GetWorld()->SpawnActor<AState>(newState.LoadSynchronous(),GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
 	currentState->StateMachineRef = this;
-	currentState->OnEnterState();
 	OnChangeStateDelegate.Broadcast(currentState);
+	currentState->OnEnterState();
 }
 
-void UAC_StateMachine::ForceChangeState(TSoftClassPtr<UState> newState)
+void UAC_StateMachine::ForceChangeState(TSoftClassPtr<AState> newState)
 {
 	if (newState.IsNull())
 	{
@@ -80,10 +79,22 @@ void UAC_StateMachine::ForceChangeState(TSoftClassPtr<UState> newState)
 
 void UAC_StateMachine::CheckTransitions()
 {
+	if(!IsValid(currentState))
+	{
+		UE_LOG(StateMachine, Error, TEXT("invalid current state !"));
+		return;
+	}
+
+	if(currentState->transitionsArray.IsEmpty())
+	{
+		UE_LOG(StateMachine, Error, TEXT("no transition found !"));
+		return;
+	}
+	
 	for (const auto& transition : currentState->transitionsArray)
 	{
 		bool canTransition;
-		TSoftClassPtr<UState> nextState;
+		TSoftClassPtr<AState> nextState;
 		transition.Execute(nextState, canTransition);
 		if (canTransition)
 		{
@@ -91,6 +102,5 @@ void UAC_StateMachine::CheckTransitions()
 			return;
 		}
 	}
-
-	UE_LOG(StateMachine, Log, TEXT("no transition found "));
+	UE_LOG(StateMachine, Log, TEXT("cannot transition from current state"));
 }

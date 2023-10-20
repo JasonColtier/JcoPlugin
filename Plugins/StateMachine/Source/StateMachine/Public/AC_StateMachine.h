@@ -9,8 +9,8 @@
 DECLARE_LOG_CATEGORY_EXTERN(StateMachine, Log, All);
 
 
-class UState;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeState,UState*,currentState);
+class AState;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeState,AState*,currentState);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
@@ -26,19 +26,19 @@ public:
 	 * @brief the initial state of the state machine
 	 */
 	UPROPERTY(EditAnywhere)
-	TSoftClassPtr<UState> initialState;
+	TSoftClassPtr<AState> initialState;
 
 	/**
 	 * @brief the current state of the state machine
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UState> currentState;
+	TObjectPtr<AState> currentState;
 
 	/**
 	 * @brief draws debug states and transition on screen
 	 */
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	bool showDebug;
+	bool showDebug = false;
 
 	/**
 	 * @brief called when a state is changed, idealy this sould be used sparingly to keep the states autonomous
@@ -58,14 +58,14 @@ public:
 	 * @brief 
 	 * @param newState Changes the current state of the state machine to the new state. The new state is instantiated
 	 */
-	void ChangeState(TSoftClassPtr<UState> newState);
+	void ChangeState(TSoftClassPtr<AState> newState);
 
 	/**
 	 * @brief Force the state machine to switch to the desired state, no transition check is done
 	 * @param newState 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void ForceChangeState(TSoftClassPtr<UState> newState);
+	void ForceChangeState(TSoftClassPtr<AState> newState);
 
 private:
 	/**

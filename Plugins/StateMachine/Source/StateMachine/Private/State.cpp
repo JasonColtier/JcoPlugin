@@ -5,26 +5,35 @@
 
 #include "AC_StateMachine.h"
 
-UState::UState()
+
+void AState::BeginPlay()
 {
+	Super::BeginPlay();
+
 	UE_LOG(StateMachine, Log, TEXT("state created %s"), *GetName());
 	defaultTransitionDelegate.BindUFunction(this, "DefaultTransition");
 	transitionsArray.AddUnique(defaultTransitionDelegate);
 }
 
-void UState::AddTransition(const FTransitionDelegate& function)
+
+void AState::BeginDestroy()
+{
+	Super::BeginDestroy();
+}
+
+void AState::AddTransition(const FTransitionDelegate& function)
 {
 	transitionsArray.AddUnique(function);
 	UE_LOG(StateMachine, Log, TEXT("added transition %s"), *function.GetFunctionName().ToString());
 }
 
-void UState::GetTransitions(TArray<TSoftClassPtr<UState>>& transitions)
+void AState::GetTransitions(TArray<TSoftClassPtr<AState>>& transitions)
 {
 	for (const auto& transition : transitionsArray)
 	{
 		if (transition.IsBound())
 		{
-			TSoftClassPtr<UState> nextState;
+			TSoftClassPtr<AState> nextState;
 			bool tmp;
 			transition.Execute(nextState, tmp);
 			transitions.Add(nextState);
@@ -36,7 +45,3 @@ void UState::GetTransitions(TArray<TSoftClassPtr<UState>>& transitions)
 	}
 }
 
-UState::~UState()
-{
-	// UE_LOG(StateMachine, Warning, TEXT("delete state %s"), *GetName());
-}
